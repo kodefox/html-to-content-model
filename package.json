@@ -11,7 +11,12 @@
     "test-src": "mocha \"src/**/__tests__/*.js\"",
     "test": "npm run lint && npm run typecheck && npm run test-src"
   },
-  "dependencies": {},
+  "dependencies": {
+    "draft-js": "^0.9.1",
+    "draft-js-import-html": "^0.3.1",
+    "parse5": "^2.2.3",
+    "synthetic-dom": "^0.2.0"
+  },
   "devDependencies": {
     "babel-core": "^6.18.2",
     "babel-eslint": "^7.1.0",
@@ -24,8 +29,12 @@
     "eslint-plugin-babel": "^3.3.0",
     "eslint-plugin-flowtype": "^2.25.0",
     "expect": "^1.20.2",
-    "flow-bin": "^0.34.0",
+    "flow-bin": "^0.32.0",
     "mocha": "^3.1.2"
+  },
+  "peerDependencies": {
+    "react": "^0.14.0 || ^15.0.0",
+    "react-dom": "^0.14.0 || ^15.0.0"
   },
   "keywords": [],
   "author": "devteam@kodefox.com",
