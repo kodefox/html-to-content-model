@@ -31,9 +31,6 @@ export default function parseHTML(html: string): FragmentNode {
       currentNode.appendChild(new TextNode(text));
     }
   });
-  parser.write(html);
-  // This is kind of hacky, but it forces the parser to flush all pending text.
-  parser.write('</html>');
-  parser.end();
+  parser.end(html);
   return new ElementNode('body', [], [rootNode]);
 }
