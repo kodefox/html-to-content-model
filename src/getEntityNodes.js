@@ -1,7 +1,7 @@
 // @flow
 type EntityKey = string;
 
-import type {EntityRange, StyleRange} from './transform';
+import type {EntityRange, StyleRange} from './modelFromElement';
 
 export type EntityNode = {
   entity: ?EntityKey;

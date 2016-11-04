@@ -1,40 +1,13 @@
 // @flow
-import {convertToRaw} from 'draft-js';
-import {stateFromHTML} from 'draft-js-import-html';
 import getEntityNodes from './getEntityNodes';
 import parseHTML from './parseHTML';
+import modelFromElement from './modelFromElement';
 
 import type {EntityNode} from './getEntityNodes';
-
-export type StyleRange = {
-  offset: number;
-  length: number;
-  style: string;
-};
-
-export type EntityRange = {
-  offset: number;
-  length: number;
-  key: number;
-};
-
-type RawEntity = {
-  type: string;
-  mutability: string;
-  data: {[key: string]: mixed};
-};
+import type {RawEntity, RawBlock} from './modelFromElement';
 
 type Entity = {
   type: string;
-  data: {[key: string]: mixed};
-};
-
-type RawBlock = {
-  text: string;
-  type: string;
-  depth: number;
-  inlineStyleRanges: Array<StyleRange>;
-  entityRanges: Array<EntityRange>;
   data: {[key: string]: mixed};
 };
 
@@ -79,15 +52,16 @@ function isEmptyObject(object: {[key: string]: any}) {
 }
 
 export function fromHTML(html: string, options: Options = DEFAULT_OPTIONS): Output { // eslint-disable-line no-unused-vars
-  let {entityMap, blocks} = convertToRaw(
-    stateFromHTML(html, {parser: parseHTML})
-  );
+  let element = parseHTML(html);
+  let {entityMap, blocks} = modelFromElement(element);
   let normalizedEntityMap;
   let entityMapKeys = Object.keys(entityMap);
   if (entityMapKeys.length !== 0) {
     normalizedEntityMap = {};
     for (let key of entityMapKeys) {
-      normalizedEntityMap[key] = normalizeEntity(entityMap[key]);
+      // This is to make Flow happy.
+      let numericKey = Number(key);
+      normalizedEntityMap[key] = normalizeEntity(entityMap[numericKey]);
     }
   }
   let normalizedBlocks = blocks.map(normalizeBlock);
