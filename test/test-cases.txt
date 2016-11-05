@@ -1,0 +1,82 @@
+# Plain text
+{"blocks":[{"type":"unstyled","entityNodes":[{"entity":null,"styleNodes":[{"text":"a","styles":null}]}]}]}
+<p>a</p>
+
+# Whitespace collapse
+{"blocks":[{"type":"unstyled","entityNodes":[{"entity":null,"styleNodes":[{"text":"a b","styles":null}]}]}]}
+<p>a &#9;&#10; b</p>
+
+# Line breaks
+{"blocks":[{"type":"unstyled","entityNodes":[{"entity":null,"styleNodes":[{"text":"a\n","styles":null}]}]}]}
+<p>a<br>b<br>c</p>
+
+# Line breaks
+{"blocks":[{"type":"unstyled","entityNodes":[{"entity":null,"styleNodes":[{"text":"a\n","styles":null}]}]}]}
+<p>a<br>&#10;b</p>
+
+# Line breaks with extra space
+{"blocks":[{"type":"unstyled","entityNodes":[{"entity":null,"styleNodes":[{"text":"a\n","styles":null}]}]}]}
+<p>a &#10; <br> &#10; b</p>
+
+# Single inline style
+{"blocks":[{"type":"unstyled","entityNodes":[{"entity":null,"styleNodes":[{"text":"asd","styles":null},{"text":"f","styles":["BOLD"]}]}]}]}
+<p>asd<strong>f</strong></p>
+
+# Nested inline styles
+{"blocks":[{"type":"unstyled","entityNodes":[{"entity":null,"styleNodes":[{"text":"BoldItalic","styles":["ITALIC","BOLD"]}]}]}]}
+<p><em><strong>BoldItalic</strong></em></p>
+
+# Adjacent inline styles
+{"blocks":[{"type":"unstyled","entityNodes":[{"entity":null,"styleNodes":[{"text":"Bold","styles":["ITALIC"]},{"text":"Italic","styles":["BOLD"]}]}]}]}
+<p><em>Bold</em><strong>Italic</strong></p>
+
+# Blockquote
+{"blocks":[{"type":"blockquote","entityNodes":[{"entity":null,"styleNodes":[{"text":"test","styles":null}]}]}]}
+<blockquote>test</blockquote>
+
+# Image Entity
+{"entityMap":{"0":{"type":"IMAGE","data":{"src":"a.jpg","alt":"a"}}},"blocks":[{"type":"unstyled","entityNodes":[{"entity":"0","styleNodes":[{"text":"\u00A0","styles":null}]}]}]}
+<p><img src="a.jpg" alt="a"/></p>
+
+# Entity
+{"entityMap":{"0":{"type":"LINK","data":{"url":"/"}}},"blocks":[{"type":"unstyled","entityNodes":[{"entity":"0","styleNodes":[{"text":"a","styles":null}]}]}]}
+<p><a href="/">a</a></p>
+
+# Entity missing required attribute
+{"blocks":[{"type":"unstyled","entityNodes":[{"entity":null,"styleNodes":[{"text":"a","styles":null}]}]}]}
+<p><a id="foo">a</a></p>
+
+# Entity with supported and unsupported attributes
+{"entityMap":{"0":{"type":"LINK","data":{"url":"/","rel":"foo","target":"_blank"}}},"blocks":[{"type":"unstyled","entityNodes":[{"entity":"0","styleNodes":[{"text":"a","styles":null}]}]}]}
+<p><a href="/" rel="foo" target="_blank" id="bar" baz="baz">a</a></p>
+
+# Entity data-* allowed
+{"entityMap":{"0":{"type":"LINK","data":{"url":"/","data-foo":"bar","data-bar-baz":"yes"}}},"blocks":[{"type":"unstyled","entityNodes":[{"entity":"0","styleNodes":[{"text":"a","styles":null}]}]}]}
+<p><a href="/" data-foo="bar" data="no1" data-="no2" data-bar-baz="yes">a</a></p>
+
+# Entity with invalid attribute (key of Object.prototype)
+{"entityMap":{"0":{"type":"LINK","data":{"url":"/"}}},"blocks":[{"type":"unstyled","entityNodes":[{"entity":"0","styleNodes":[{"text":"a","styles":null}]}]}]}
+<p><a href="/" constructor="foo">a</a></p>
+
+# Entity with inline style
+{"entityMap":{"0":{"type":"LINK","data":{"url":"/"}}},"blocks":[{"type":"unstyled","entityNodes":[{"entity":"0","styleNodes":[{"text":"a","styles":["ITALIC"]}]}]}]}
+<p><a href="/"><em>a</em></a></p>
+
+# Ordered list
+{"blocks":[{"type":"unstyled","entityNodes":[{"entity":null,"styleNodes":[{"text":"An ordered list:","styles":null}]}]},{"type":"ordered-list-item","entityNodes":[{"entity":null,"styleNodes":[{"text":"One","styles":null}]}]},{"type":"ordered-list-item","entityNodes":[{"entity":null,"styleNodes":[{"text":"Two","styles":null}]}]}]}
+<p>An ordered list:</p>
+<ol>
+  <li>One</li>
+  <li>Two</li>
+</ol>
+
+# Nested Ordered list
+{"blocks":[{"type":"ordered-list-item","entityNodes":[{"entity":null,"styleNodes":[{"text":"One","styles":null}]}],"depth":1},{"type":"ordered-list-item","entityNodes":[{"entity":null,"styleNodes":[{"text":"Two","styles":null}]}]}]}
+<ol>
+  <li>
+    <ol>
+      <li>One</li>
+    </ol>
+  </li>
+  <li>Two</li>
+</ol>
