@@ -1,6 +1,6 @@
 {
   "name": "html-to-content-model",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "html-to-content-model",
   "main": "lib/main.js",
   "scripts": {
