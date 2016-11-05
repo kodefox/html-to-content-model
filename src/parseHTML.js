@@ -1,5 +1,5 @@
 // @flow
-import {SAXParser} from 'parse5';
+import {SAXParser} from 'react-native-parse-html';
 import {
   TextNode,
   ElementNode,

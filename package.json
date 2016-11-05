@@ -12,7 +12,7 @@
     "test": "npm run lint && npm run typecheck && npm run test-src"
   },
   "dependencies": {
-    "parse5": "^2.2.3",
+    "react-native-parse-html": "^2.2.3",
     "stream": "0.0.2",
     "synthetic-dom": "^0.2.1"
   },
