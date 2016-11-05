@@ -25,7 +25,8 @@ type Output = {
 
 type Options = {};
 
-const DEFAULT_OPTIONS = {};
+const DEFAULT_OPTIONS: Options = {};
+const EMPTY_KEYS: Array<string> = [];
 
 export function normalizeEntity(entity: RawEntity): Entity {
   let {type, data} = entity;
@@ -55,7 +56,7 @@ export function fromHTML(html: string, options: Options = DEFAULT_OPTIONS): Outp
   let element = parseHTML(html);
   let {entityMap, blocks} = modelFromElement(element);
   let normalizedEntityMap;
-  let entityMapKeys = Object.keys(entityMap);
+  let entityMapKeys = entityMap ? Object.keys(entityMap) : EMPTY_KEYS;
   if (entityMapKeys.length !== 0) {
     normalizedEntityMap = {};
     for (let key of entityMapKeys) {

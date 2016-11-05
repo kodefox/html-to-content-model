@@ -109,32 +109,12 @@ const LINE_BREAKS = /(\r\n|\r|\n)/g;
 // to `\n`), so it's safe to assume it will only appear in the text content when
 // we put it there as a placeholder.
 const SOFT_BREAK_PLACEHOLDER = '\r';
-const ZERO_WIDTH_SPACE = '\u200B';
 const DATA_ATTRIBUTE = /^data-([a-z0-9-]+)$/;
 
 // Map element attributes to entity data.
 const ELEM_ATTR_MAP = {
   a: {href: 'url', rel: 'rel', target: 'target', title: 'title'},
   img: {src: 'src', alt: 'alt'},
-};
-
-const getEntityData = (tagName: string, element: DOMElement) => {
-  const data = {};
-  if (ELEM_ATTR_MAP.hasOwnProperty(tagName)) {
-    const attrMap = ELEM_ATTR_MAP[tagName];
-    for (let i = 0; i < element.attributes.length; i++) {
-      const {name, value} = element.attributes[i];
-      if (value != null) {
-        if (attrMap.hasOwnProperty(name)) {
-          const newName = attrMap[name];
-          data[newName] = value;
-        } else if (DATA_ATTRIBUTE.test(name)) {
-          data[name] = value;
-        }
-      }
-    }
-  }
-  return data;
 };
 
 // Functions to convert elements to entities.
@@ -165,6 +145,8 @@ const ELEM_TO_ENTITY = {
   },
 };
 
+let entityKeyCounter = 0;
+
 class BlockGenerator {
   blockStack: Array<ParsedBlock>;
   blockList: Array<ParsedBlock>;
@@ -180,6 +162,7 @@ class BlockGenerator {
     // This is a linear list of blocks that will form the output; for example
     // [p, li, li, blockquote].
     this.blockList = [];
+    this.entityMap = {};
     this.depth = 0;
   }
 
@@ -327,6 +310,7 @@ class BlockGenerator {
       Array.from(element.childNodes).forEach(this.processNode, this);
     }
     if (SELF_CLOSING_ELEMENTS.hasOwnProperty(tagName)) {
+      // Here we replace an <img /> tag with a non-breaking space.
       this.processText('\u00A0');
     }
     block.entityStack.pop();
@@ -337,11 +321,6 @@ class BlockGenerator {
     let text = node.nodeValue;
     // This is important because we will use \r as a placeholder for a soft break.
     text = text.replace(LINE_BREAKS, '\n');
-    // Replace zero-width space (we use it as a placeholder in markdown) with a
-    // soft break.
-    // TODO: The import-markdown package should correctly turn breaks into <br>
-    // elements so we don't need to include this hack.
-    text = text.split(ZERO_WIDTH_SPACE).join(SOFT_BREAK_PLACEHOLDER);
     this.processText(text);
   }
 
@@ -372,6 +351,25 @@ class BlockGenerator {
       this.processTextNode(node);
     }
   }
+}
+
+function getEntityData(tagName: string, element: DOMElement) {
+  const data = {};
+  if (ELEM_ATTR_MAP.hasOwnProperty(tagName)) {
+    const attrMap = ELEM_ATTR_MAP[tagName];
+    for (let i = 0; i < element.attributes.length; i++) {
+      const {name, value} = element.attributes[i];
+      if (value != null) {
+        if (attrMap.hasOwnProperty(name)) {
+          const newName = attrMap[name];
+          data[newName] = value;
+        } else if (DATA_ATTRIBUTE.test(name)) {
+          data[name] = value;
+        }
+      }
+    }
+  }
+  return data;
 }
 
 function trimLeadingNewline(text: string, characterMeta: CharacterMetaList): TextFragment {
@@ -438,7 +436,7 @@ function canHaveDepth(blockType: string): boolean {
 function concatFragments(fragments: Array<TextFragment>): TextFragment {
   let text = '';
   let characterMeta: CharacterMetaList = [];
-  fragments.forEach((textFragment: TextFragment) => {
+  fragments.forEach((textFragment) => {
     text = text + textFragment.text;
     characterMeta = characterMeta.concat(textFragment.characterMeta);
   });
@@ -450,37 +448,44 @@ function addStyleFromTagName(styleSet: StyleSet, tagName: string, elementStyles?
   switch (tagName) {
     case 'b':
     case 'strong': {
-      return styleSet.add(INLINE_STYLE.BOLD);
+      return addToSet(styleSet, INLINE_STYLE.BOLD);
     }
     case 'i':
     case 'em': {
-      return styleSet.add(INLINE_STYLE.ITALIC);
+      return addToSet(styleSet, INLINE_STYLE.ITALIC);
     }
     case 'ins': {
-      return styleSet.add(INLINE_STYLE.UNDERLINE);
+      return addToSet(styleSet, INLINE_STYLE.UNDERLINE);
     }
     case 'code': {
-      return styleSet.add(INLINE_STYLE.CODE);
+      return addToSet(styleSet, INLINE_STYLE.CODE);
     }
     case 'del': {
-      return styleSet.add(INLINE_STYLE.STRIKETHROUGH);
-    }
-    default: {
-      // Allow custom styles to be provided.
-      if (elementStyles && elementStyles[tagName]) {
-        return styleSet.add(elementStyles[tagName]);
-      }
-
-      return styleSet;
+      return addToSet(styleSet, INLINE_STYLE.STRIKETHROUGH);
     }
   }
+  // Allow custom styles to be provided.
+  if (elementStyles && elementStyles[tagName]) {
+    return addToSet(styleSet, elementStyles[tagName]);
+  }
+  return styleSet;
+}
+
+function addToSet<T>(set: Set<T>, item: T): Set<T> {
+  if (!set.has(item)) {
+    set = new Set(set);
+    set.add(item);
+  }
+  return set;
 }
 
 function getKey(): number {
-  return Math.floor(Math.random() * Math.pow(2, 53));
+  return entityKeyCounter++;
 }
 
 function modelFromElement(element: DOMElement, options?: Options): ContentModel {
+  // This key reset is kinda hacky.
+  entityKeyCounter = 0;
   let generator = new BlockGenerator(options);
   return generator.process(element);
 }
