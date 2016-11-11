@@ -115,6 +115,11 @@ const DATA_ATTRIBUTE = /^data-([a-z0-9-]+)$/;
 const ELEM_ATTR_MAP = {
   a: {href: 'url', rel: 'rel', target: 'target', title: 'title'},
   img: {src: 'src', alt: 'alt'},
+  input: {
+    type: 'type',
+    value: 'value',
+    placeholder: 'placeholder',
+  },
 };
 
 // Functions to convert elements to entities.
@@ -142,6 +147,15 @@ const ELEM_TO_ENTITY = {
         data,
       };
     }
+  },
+  input(tagName: string, element: DOMElement): ?RawEntity {
+    let data = getEntityData(tagName, element);
+    return {
+      key: getKey(),
+      type: ENTITY_TYPE.INPUT,
+      mutability: 'MUTABLE',
+      data,
+    };
   },
 };
 

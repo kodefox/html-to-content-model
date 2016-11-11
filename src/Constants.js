@@ -20,6 +20,7 @@ export const BLOCK_TYPE = {
 export const ENTITY_TYPE = {
   LINK: 'LINK',
   IMAGE: 'IMAGE',
+  INPUT: 'INPUT',
 };
 
 export const INLINE_STYLE = {
@@ -53,4 +54,4 @@ export const SPECIAL_ELEMENTS = {
 };
 
 // These elements are special because they cannot contain childNodes.
-export const SELF_CLOSING_ELEMENTS = {img: 1};
+export const SELF_CLOSING_ELEMENTS = {img: 1, input: 1};

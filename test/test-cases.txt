@@ -80,3 +80,9 @@
   </li>
   <li>Two</li>
 </ol>
+
+# HTML text input
+{"entityMap":{"0":{"type":"INPUT","data":{"type":"text","value":"x","placeholder":"Age","data-foo":"123"}}},"blocks":[{"type":"unstyled","entityNodes":[{"entity":"0","styleNodes":[{"text":"\u00A0","styles":null}]}]}]}
+<p>
+  <input type="text" value="x" data-foo="123" placeholder="Age" foo="not included" />
+</p>
