@@ -1,11 +1,5 @@
 {
-  "plugins": [
-    "transform-class-properties",
-    "transform-flow-strip-types",
-    "syntax-flow"
-  ],
   "presets": [
-    "es2015-native-generators",
-    "stage-2"
+    "react-native"
   ]
 }
