@@ -17,7 +17,7 @@
     "synthetic-dom": "^0.2.1"
   },
   "devDependencies": {
-    "babel-core": "^6.18.2",
+    "babel-cli": "^6.18.0",
     "babel-eslint": "^7.1.0",
     "babel-preset-react-native": "^1.9.0",
     "eslint": "^3.9.1",
