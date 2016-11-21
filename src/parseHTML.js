@@ -20,7 +20,9 @@ export default function parseHTML(html: string): FragmentNode {
     if (currentNode) {
       currentNode.appendChild(newNode);
     }
-    nodeStack.push(newNode);
+    if (!newNode.isSelfClosing) {
+      nodeStack.push(newNode);
+    }
   });
   parser.on('endTag', () => {
     nodeStack.pop();

@@ -7,15 +7,15 @@
 <p>a &#9;&#10; b</p>
 
 # Line breaks
-{"blocks":[{"type":"unstyled","entityNodes":[{"entity":null,"styleNodes":[{"text":"a\n","styles":null}]}]}]}
+{"blocks":[{"type":"unstyled","entityNodes":[{"entity":null,"styleNodes":[{"text":"a\nb\nc","styles":null}]}]}]}
 <p>a<br>b<br>c</p>
 
-# Line breaks
-{"blocks":[{"type":"unstyled","entityNodes":[{"entity":null,"styleNodes":[{"text":"a\n","styles":null}]}]}]}
+# Line break with entity
+{"blocks":[{"type":"unstyled","entityNodes":[{"entity":null,"styleNodes":[{"text":"a\nb","styles":null}]}]}]}
 <p>a<br>&#10;b</p>
 
 # Line breaks with extra space
-{"blocks":[{"type":"unstyled","entityNodes":[{"entity":null,"styleNodes":[{"text":"a\n","styles":null}]}]}]}
+{"blocks":[{"type":"unstyled","entityNodes":[{"entity":null,"styleNodes":[{"text":"a\nb","styles":null}]}]}]}
 <p>a &#10; <br> &#10; b</p>
 
 # Single inline style
@@ -86,3 +86,7 @@
 <p>
   <input type="text" value="x" data-foo="123" placeholder="Age" foo="not included" />
 </p>
+
+# Text following a <br>
+{"blocks":[{"type":"unstyled","entityNodes":[{"entity":null,"styleNodes":[{"text":"Hello\nWorld!","styles":null}]}]}]}
+<p>Hello<br /> World!</p>
