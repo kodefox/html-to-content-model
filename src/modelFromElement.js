@@ -120,6 +120,11 @@ const ELEM_ATTR_MAP = {
     value: 'value',
     placeholder: 'placeholder',
   },
+  iframe: {
+    src: 'src',
+    width: 'width',
+    height: 'height',
+  },
 };
 
 // Functions to convert elements to entities.
@@ -153,6 +158,15 @@ const ELEM_TO_ENTITY = {
     return {
       key: getKey(),
       type: ENTITY_TYPE.INPUT,
+      mutability: 'MUTABLE',
+      data,
+    };
+  },
+  iframe(tagName: string, element: DOMElement): ?RawEntity {
+    let data = getEntityData(tagName, element);
+    return {
+      key: getKey(),
+      type: ENTITY_TYPE.VIDEO,
       mutability: 'MUTABLE',
       data,
     };

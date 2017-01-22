@@ -21,6 +21,7 @@ export const ENTITY_TYPE = {
   LINK: 'LINK',
   IMAGE: 'IMAGE',
   INPUT: 'INPUT',
+  VIDEO: 'VIDEO',
 };
 
 export const INLINE_STYLE = {
