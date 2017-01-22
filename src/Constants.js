@@ -21,7 +21,7 @@ export const ENTITY_TYPE = {
   LINK: 'LINK',
   IMAGE: 'IMAGE',
   INPUT: 'INPUT',
-  VIDEO: 'VIDEO',
+  IFRAME: 'IFRAME',
 };
 
 export const INLINE_STYLE = {
@@ -55,4 +55,4 @@ export const SPECIAL_ELEMENTS = {
 };
 
 // These elements are special because they cannot contain childNodes.
-export const SELF_CLOSING_ELEMENTS = {img: 1, input: 1};
+export const SELF_CLOSING_ELEMENTS = {iframe: 1, img: 1, input: 1};

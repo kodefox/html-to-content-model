@@ -91,8 +91,8 @@
 {"blocks":[{"type":"unstyled","entityNodes":[{"entity":null,"styleNodes":[{"text":"Hello\nWorld!","styles":null}]}]}]}
 <p>Hello<br /> World!</p>
 
-# HTML video with iframe
-{"entityMap":{"0":{"type":"VIDEO","data":{"src":"https://www.youtube.com/embed/sFXQwk63Y9E?showinfo=0&rel=0", "width":"400", "height":"300"}}},"blocks":[{"type":"unstyled","entityNodes":[{"entity":"0","styleNodes":[{"text":"</p>","styles":null}]}]}]}
-<p>
-  <iframe allowfullscreen='true' frameborder='0' height='300' src='https://www.youtube.com/embed/sFXQwk63Y9E?showinfo=0&amp;rel=0' width='400' />
-</p>
+# HTML iframe
+{"entityMap":{"0":{"type":"IFRAME","data":{"src":"https://www.youtube.com/embed/sFXQwk63Y9E?showinfo=0&rel=0", "width":"400", "height":"300"}}},"blocks":[{"type":"unstyled","entityNodes":[{"entity":"0","styleNodes":[{"text":"\u00A0","styles":null}]}]}]}
+<div>
+  <iframe allowfullscreen="true" frameborder="0" height="300" src="https://www.youtube.com/embed/sFXQwk63Y9E?showinfo=0&amp;rel=0" width="400" />
+</div>

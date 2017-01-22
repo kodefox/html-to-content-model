@@ -166,7 +166,7 @@ const ELEM_TO_ENTITY = {
     let data = getEntityData(tagName, element);
     return {
       key: getKey(),
-      type: ENTITY_TYPE.VIDEO,
+      type: ENTITY_TYPE.IFRAME,
       mutability: 'MUTABLE',
       data,
     };
