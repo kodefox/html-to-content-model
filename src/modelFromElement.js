@@ -9,7 +9,7 @@ import {
   INLINE_STYLE,
   INLINE_ELEMENTS,
   SPECIAL_ELEMENTS,
-  SELF_CLOSING_ELEMENTS,
+  ATOMIC_ELEMENTS,
 } from './Constants';
 import {NODE_TYPE_ELEMENT, NODE_TYPE_TEXT} from 'synthetic-dom';
 
@@ -337,7 +337,7 @@ class BlockGenerator {
     if (element.childNodes != null) {
       Array.from(element.childNodes).forEach(this.processNode, this);
     }
-    if (SELF_CLOSING_ELEMENTS.hasOwnProperty(tagName)) {
+    if (ATOMIC_ELEMENTS.hasOwnProperty(tagName)) {
       // Here we replace an <img /> tag with a non-breaking space.
       this.processText('\u00A0');
     }

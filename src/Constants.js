@@ -54,5 +54,6 @@ export const SPECIAL_ELEMENTS = {
   isindex: 1,
 };
 
-// These elements are special because they cannot contain childNodes.
-export const SELF_CLOSING_ELEMENTS = {img: 1, input: 1, iframe: 1};
+// These elements essentially represent a single entity. They cannot contain
+// children of any kind. This set is a subset of SPECIAL_ELEMENTS.
+export const ATOMIC_ELEMENTS = {img: 1, input: 1, iframe: 1};
