@@ -14,8 +14,8 @@ import {
 import {NODE_TYPE_ELEMENT, NODE_TYPE_TEXT} from 'synthetic-dom';
 
 import type {
-  Node as SyntheticNode,
-  ElementNode as SyntheticElement,
+  Node as DOMNode,
+  ElementNode as DOMElement,
 } from 'synthetic-dom';
 
 export type StyleRange = {
@@ -51,9 +51,6 @@ export type ContentModel = {
   blocks: Array<RawBlock>;
 };
 
-type DOMNode = SyntheticNode | Node;
-type DOMElement = SyntheticElement | Element;
-
 type Style = string;
 type StyleSet = Set<Style>;
 
@@ -88,6 +85,8 @@ type ElementStyles = {[tagName: string]: Style};
 type Options = {
   elementStyles?: ElementStyles;
   blockTypes?: {[key: string]: string};
+  customTagToEntityMap?: ?TagToEntityMap;
+  customInlineElements?: ?{[tagName: string]: boolean};
 };
 
 const NO_STYLE = new Set();
@@ -127,9 +126,13 @@ const ELEM_ATTR_MAP = {
   },
 };
 
+type TagToEntityMap = {[tagName: string]: string};
+type TagsToEntities = {[tagName: string]: TagToEntityFunction};
+type TagToEntityFunction = (tagName: string, element: DOMElement) => ?RawEntity;
+
 // Functions to convert elements to entities.
-const ELEM_TO_ENTITY = {
-  a(tagName: string, element: DOMElement): ?RawEntity {
+const ELEM_TO_ENTITY: TagsToEntities = {
+  a(tagName, element) {
     let data = getEntityData(tagName, element);
     // Don't add `<a>` elements with no href.
     if (data.url != null) {
@@ -141,7 +144,7 @@ const ELEM_TO_ENTITY = {
       };
     }
   },
-  img(tagName: string, element: DOMElement): ?RawEntity {
+  img(tagName, element) {
     let data = getEntityData(tagName, element);
     // Don't add `<img>` elements with no src.
     if (data.src != null) {
@@ -153,27 +156,30 @@ const ELEM_TO_ENTITY = {
       };
     }
   },
-  input(tagName: string, element: DOMElement): ?RawEntity {
-    let data = getEntityData(tagName, element);
-    return {
-      key: getKey(),
-      type: ENTITY_TYPE.INPUT,
-      mutability: 'MUTABLE',
-      data,
-    };
-  },
-  iframe(tagName: string, element: DOMElement): ?RawEntity {
-    let data = getEntityData(tagName, element);
-    return {
-      key: getKey(),
-      type: ENTITY_TYPE.IFRAME,
-      mutability: 'MUTABLE',
-      data,
-    };
-  },
+  input: getEntityHandler(ENTITY_TYPE.INPUT),
+  iframe: getEntityHandler(ENTITY_TYPE.IFRAME),
 };
 
+function getEntityHandler(type): TagToEntityFunction {
+  return (tagName, element) => ({
+    key: getKey(),
+    type,
+    mutability: 'MUTABLE',
+    data: getEntityData(tagName, element),
+  });
+}
+
+function getEntityMap(tagNameToEntityType: TagToEntityMap) {
+  let result = {};
+  for (let tagName of Object.keys(tagNameToEntityType)) {
+    let entityType = tagNameToEntityType[tagName];
+    result[tagName] = getEntityHandler(entityType);
+  }
+  return result;
+}
+
 let entityKeyCounter = 0;
+const DEFAULT_OPTIONS: Options = {};
 
 class BlockGenerator {
   blockStack: Array<ParsedBlock>;
@@ -181,9 +187,12 @@ class BlockGenerator {
   entityMap: {[key: number]: RawEntity};
   depth: number;
   options: Options;
+  tagsToEntities: TagsToEntities;
 
-  constructor(options: Options = {}) {
-    this.options = options;
+  constructor(options: Options = DEFAULT_OPTIONS) {
+    let {customTagToEntityMap, ...otherOptions} = options;
+    this.tagsToEntities = customTagToEntityMap ? {...ELEM_TO_ENTITY, ...getEntityMap(customTagToEntityMap)} : ELEM_TO_ENTITY;
+    this.options = otherOptions;
     // This represents the hierarchy as we traverse nested elements; for
     // example [body, ul, li] where we must know li's parent type (ul or ol).
     this.blockStack = [];
@@ -324,8 +333,9 @@ class BlockGenerator {
     let styleSet = block.styleStack.slice(-1)[0];
     let entity = block.entityStack.slice(-1)[0];
     styleSet = addStyleFromTagName(styleSet, tagName, this.options.elementStyles);
-    if (ELEM_TO_ENTITY.hasOwnProperty(tagName)) {
-      let newEntity = ELEM_TO_ENTITY[tagName](tagName, element);
+
+    if (this.tagsToEntities.hasOwnProperty(tagName)) {
+      let newEntity = this.tagsToEntities[tagName](tagName, element);
       // If the to-entity function returns nothing, use the existing entity.
       if (newEntity) {
         entity = newEntity;
@@ -370,7 +380,7 @@ class BlockGenerator {
     if (node.nodeType === NODE_TYPE_ELEMENT) {
       let element: DOMElement = node;
       let tagName = element.nodeName.toLowerCase();
-      if (INLINE_ELEMENTS.hasOwnProperty(tagName)) {
+      if (this.isInline(tagName)) {
         this.processInlineElement(element);
       } else {
         this.processBlockElement(element);
@@ -379,14 +389,24 @@ class BlockGenerator {
       this.processTextNode(node);
     }
   }
+
+  isInline(tagName) {
+    if (INLINE_ELEMENTS.hasOwnProperty(tagName)) {
+      return true;
+    }
+    let {customInlineElements} = this.options;
+    if (customInlineElements && customInlineElements[tagName] === true) {
+      return true;
+    }
+    return false;
+  }
 }
 
 function getEntityData(tagName: string, element: DOMElement) {
   const data = {};
   if (ELEM_ATTR_MAP.hasOwnProperty(tagName)) {
     const attrMap = ELEM_ATTR_MAP[tagName];
-    for (let i = 0; i < element.attributes.length; i++) {
-      const {name, value} = element.attributes[i];
+    for (let {name, value} of element.attributes) {
       if (value != null) {
         if (attrMap.hasOwnProperty(name)) {
           const newName = attrMap[name];
@@ -395,6 +415,10 @@ function getEntityData(tagName: string, element: DOMElement) {
           data[name] = value;
         }
       }
+    }
+  } else {
+    for (let {name, value} of element.attributes) {
+      data[name] = value;
     }
   }
   return data;
