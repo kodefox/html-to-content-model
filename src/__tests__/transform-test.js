@@ -51,6 +51,9 @@ describe('custom tag', () => {
     customTagToEntityMap: {
       cta: 'CALL_TO_ACTION',
     },
+    customInlineElements: {
+      cta: true,
+    },
   };
   customTagTestCases.forEach((testCase) => {
     let {description, model, html} = testCase;
