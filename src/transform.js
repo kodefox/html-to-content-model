@@ -23,7 +23,9 @@ type Output = {
   blocks: Array<Block>;
 };
 
-type Options = {};
+type Options = {
+  customTagToEntityMap?: {[tagName: string]: string};
+};
 
 const DEFAULT_OPTIONS: Options = {};
 const EMPTY_KEYS: Array<string> = [];
@@ -52,9 +54,12 @@ function isEmptyObject(object: {[key: string]: any}) {
   return Object.keys(object).length === 0;
 }
 
-export function fromHTML(html: string, options: Options = DEFAULT_OPTIONS): Output { // eslint-disable-line no-unused-vars
+// eslint-disable-next-line no-unused-vars
+export function fromHTML(html: string, options: Options = DEFAULT_OPTIONS): Output {
   let element = parseHTML(html);
-  let {entityMap, blocks} = modelFromElement(element);
+  let {entityMap, blocks} = modelFromElement(element, {
+    customTagToEntityMap: options.customTagToEntityMap,
+  });
   let normalizedEntityMap;
   let entityMapKeys = entityMap ? Object.keys(entityMap) : EMPTY_KEYS;
   if (entityMapKeys.length !== 0) {
