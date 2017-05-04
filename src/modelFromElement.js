@@ -341,8 +341,6 @@ class BlockGenerator {
         entity = newEntity;
         this.entityMap[entity.key] = entity;
       }
-    } else {
-      // TODO: look in options.customTagToEntityMap
     }
     block.styleStack.push(styleSet);
     block.entityStack.push(entity);
