@@ -86,6 +86,7 @@ type Options = {
   elementStyles?: ElementStyles;
   blockTypes?: {[key: string]: string};
   customTagToEntityMap?: ?TagToEntityMap;
+  customInlineElements?: ?{[tagName: string]: boolean};
 };
 
 const NO_STYLE = new Set();
@@ -332,6 +333,7 @@ class BlockGenerator {
     let styleSet = block.styleStack.slice(-1)[0];
     let entity = block.entityStack.slice(-1)[0];
     styleSet = addStyleFromTagName(styleSet, tagName, this.options.elementStyles);
+
     if (this.tagsToEntities.hasOwnProperty(tagName)) {
       let newEntity = this.tagsToEntities[tagName](tagName, element);
       // If the to-entity function returns nothing, use the existing entity.
@@ -380,7 +382,7 @@ class BlockGenerator {
     if (node.nodeType === NODE_TYPE_ELEMENT) {
       let element: DOMElement = node;
       let tagName = element.nodeName.toLowerCase();
-      if (INLINE_ELEMENTS.hasOwnProperty(tagName)) {
+      if (this.isInline(tagName)) {
         this.processInlineElement(element);
       } else {
         this.processBlockElement(element);
@@ -388,6 +390,17 @@ class BlockGenerator {
     } else if (node.nodeType === NODE_TYPE_TEXT) {
       this.processTextNode(node);
     }
+  }
+
+  isInline(tagName) {
+    if (INLINE_ELEMENTS.hasOwnProperty(tagName)) {
+      return true;
+    }
+    let {customInlineElements} = this.options;
+    if (customInlineElements && customInlineElements[tagName] === true) {
+      return true;
+    }
+    return false;
   }
 }
 
