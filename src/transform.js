@@ -26,6 +26,7 @@ type Output = {
 type Options = {
   customTagToEntityMap?: {[tagName: string]: string};
   customInlineElements?: {[tagName: string]: boolean};
+  customAtomicElements?: ?{[tagName: string]: boolean};
 };
 
 const DEFAULT_OPTIONS: Options = {};
@@ -58,10 +59,8 @@ function isEmptyObject(object: {[key: string]: any}) {
 // eslint-disable-next-line no-unused-vars
 export function fromHTML(html: string, options: Options = DEFAULT_OPTIONS): Output {
   let element = parseHTML(html);
-  let {entityMap, blocks} = modelFromElement(element, {
-    customTagToEntityMap: options.customTagToEntityMap,
-    customInlineElements: options.customInlineElements,
-  });
+  let {customTagToEntityMap, customInlineElements, customAtomicElements} = options;
+  let {entityMap, blocks} = modelFromElement(element, {customTagToEntityMap, customInlineElements, customAtomicElements});
   let normalizedEntityMap;
   let entityMapKeys = entityMap ? Object.keys(entityMap) : EMPTY_KEYS;
   if (entityMapKeys.length !== 0) {

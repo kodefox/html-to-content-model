@@ -1,3 +1,3 @@
 # cta
-{"entityMap":{"0":{"type":"CALL_TO_ACTION","data":{"color":"#efc373", "destination":"", "text":"See what your friends are doing", "type":"community"}}},"blocks":[{"type":"unstyled","entityNodes":[{"entity":null,"styleNodes":[{"text":"","styles":null}]}]}]}
+{"entityMap":{"0":{"type":"CALL_TO_ACTION","data":{"color":"#efc373", "destination":"", "text":"See what your friends are doing", "type":"community"}}},"blocks":[{"type":"unstyled","entityNodes":[{"entity":"0","styleNodes":[{"text":"\u00A0","styles":null}]}]}]}
 <cta color="#efc373" destination="" text="See what your friends are doing" type="community" />

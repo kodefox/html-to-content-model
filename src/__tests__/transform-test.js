@@ -54,6 +54,9 @@ describe('custom tag', () => {
     customInlineElements: {
       cta: true,
     },
+    customAtomicElements: {
+      cta: true,
+    },
   };
   customTagTestCases.forEach((testCase) => {
     let {description, model, html} = testCase;
