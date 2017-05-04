@@ -87,6 +87,7 @@ type Options = {
   blockTypes?: {[key: string]: string};
   customTagToEntityMap?: ?TagToEntityMap;
   customInlineElements?: ?{[tagName: string]: boolean};
+  customAtomicElements?: ?{[tagName: string]: boolean};
 };
 
 const NO_STYLE = new Set();
@@ -298,7 +299,7 @@ class BlockGenerator {
     let tagName = element.nodeName.toLowerCase();
     let type = this.getBlockTypeFromTagName(tagName);
     let hasDepth = canHaveDepth(type);
-    let allowRender = !SPECIAL_ELEMENTS.hasOwnProperty(tagName);
+    let allowRender = !this.canHaveChildren(tagName);
     let block: ParsedBlock = {
       tagName: tagName,
       textFragments: [],
@@ -338,6 +339,7 @@ class BlockGenerator {
       let newEntity = this.tagsToEntities[tagName](tagName, element);
       // If the to-entity function returns nothing, use the existing entity.
       if (newEntity) {
+        // TODO: Don't add this entity if it has no text inside.
         entity = newEntity;
         this.entityMap[entity.key] = entity;
       }
@@ -347,7 +349,7 @@ class BlockGenerator {
     if (element.childNodes != null) {
       Array.from(element.childNodes).forEach(this.processNode, this);
     }
-    if (ATOMIC_ELEMENTS.hasOwnProperty(tagName)) {
+    if (this.isAtomic(tagName)) {
       // Here we replace an <img /> tag with a non-breaking space.
       this.processText('\u00A0');
     }
@@ -396,6 +398,28 @@ class BlockGenerator {
     }
     let {customInlineElements} = this.options;
     if (customInlineElements && customInlineElements[tagName] === true) {
+      return true;
+    }
+    return false;
+  }
+
+  isAtomic(tagName) {
+    if (ATOMIC_ELEMENTS.hasOwnProperty(tagName)) {
+      return true;
+    }
+    let {customAtomicElements} = this.options;
+    if (customAtomicElements && customAtomicElements[tagName] === true) {
+      return true;
+    }
+    return false;
+  }
+
+  canHaveChildren(tagName) {
+    if (SPECIAL_ELEMENTS.hasOwnProperty(tagName)) {
+      return true;
+    }
+    // Atomic elements, by definition, cannot have children.
+    if (this.isAtomic(tagName)) {
       return true;
     }
     return false;
